@@ -353,6 +353,309 @@
       return;
     }
 
+    var heroVideoFrame = document.getElementById("heroVideoFrame");
+    var heroVideo = document.getElementById("heroVideo");
+    var heroVideoPlay = document.getElementById("heroVideoPlay");
+    var videoPanelTarget = document.getElementById("videoPanelTarget");
+    var videoShowcaseInner = document.getElementById("videoShowcaseInner");
+    var videoLanded = false;
+    var videoPlaying = false;
+    var videoDocked = false;
+    var videoFrameHomeParent = heroVideoFrame ? heroVideoFrame.parentNode : null;
+    var videoFrameHomeNextSibling = heroVideoFrame ? heroVideoFrame.nextSibling : null;
+
+    // The video starts as a full-viewport cover behind the hero copy, then
+    // continuously morphs — every scroll tick, not at one discrete cutoff —
+    // into #videoPanelTarget's live rect as scroll progress sweeps through
+    // [VIDEO_MORPH_START, VIDEO_MORPH_END]. #videoPanelTarget and its
+    // flanking "Δες"/"πώς δουλεύουμε" labels (#videoShowcaseInner) live
+    // inside the hero panel itself, fading in over that same window (see
+    // the opacity line at the bottom of updateHeroVideo) as the shrink
+    // completes. Once landed, it just stops updating position/size and
+    // stays exactly where it is — still position: fixed, so it remains on
+    // screen, still playing, no matter how much further you scroll past
+    // it (see the videoLanded early-return in updateHeroVideo).
+    //
+    // Tuned against a rough "one wheel notch ≈ 100px" assumption, over the
+    // pinned range's total scrollable distance (pinWrap height − one
+    // viewport): header gone within ~1 notch, slogan within ~7, then the
+    // video's own shrink runs over the 10 notches after that (landing at
+    // notch 17). heroScrollRange (and everything derived from it below)
+    // depends on the viewport's current height, so it's recomputed on
+    // resize, not just once at load — see recomputeVideoTiming.
+    var heroScrollRange, notchToProgress, HEADER_FADE_END, SLOGAN_FADE_END, VIDEO_MORPH_START, VIDEO_MORPH_END;
+    var SCROLL_NOTCH_PX = 100;
+
+    // The target's own rect (#videoPanelTarget is fixed 16:9 — see
+    // styles.css). Re-measured on load and on resize, but deliberately NOT on every
+    // scroll tick — the target's own layout position doesn't change
+    // across the pinned dwell from scrolling alone (nothing about the
+    // hero's layout depends on scroll, only the video frame's own
+    // size/opacity), so re-measuring live on scroll is both unnecessary
+    // and fragile: a scroll event that jumps straight past the whole
+    // pinned range in one tick (scrollbar-track click, End key) fires
+    // with the hero already scrolled away, and a live measurement at
+    // that moment would freeze the video at that now-off-screen position
+    // instead of its intended on-screen spot.
+    var videoTargetRect = null;
+
+    // Recomputes everything that depends on the viewport's current size —
+    // called on load and on every resize, together, so the timing
+    // constants and the target's cached rect never drift out of sync with
+    // each other the way they would if each refreshed independently (a
+    // resize-only rect refresh with stale timing constants can disagree
+    // with updateHeroVideo about whether it's even still "landed").
+    function recomputeVideoTiming() {
+      heroScrollRange = Math.max(1, pinWrap.offsetHeight - window.innerHeight);
+      notchToProgress = SCROLL_NOTCH_PX / heroScrollRange;
+      HEADER_FADE_END = Math.min(0.15, notchToProgress * 1);
+      SLOGAN_FADE_END = Math.min(0.5, notchToProgress * 7);
+      VIDEO_MORPH_START = SLOGAN_FADE_END;
+      VIDEO_MORPH_END = Math.min(1, Math.max(VIDEO_MORPH_START + 0.1, notchToProgress * 17));
+
+      if (videoPanelTarget) {
+        // Width and horizontal centering come from the real measurement —
+        // the grid layout that positions #videoPanelTarget between the two
+        // labels is what actually needs measuring. Height is *not* taken
+        // from that measurement, though — it's derived from the width
+        // using the known 16:9 ratio instead, so the frame's shape can
+        // never end up wrong even if something about how the target's own
+        // height resolves (CSS aspect-ratio support, a layout timing
+        // quirk, whatever) disagrees with that in a given browser. The
+        // vertical center is kept wherever the raw measurement put it,
+        // just recomputing how tall the box spans around that center.
+        var rawTargetRect = videoPanelTarget.getBoundingClientRect();
+        var targetCenterY = rawTargetRect.top + rawTargetRect.height / 2;
+        var targetHeight = rawTargetRect.width * (9 / 16);
+        videoTargetRect = {
+          top: targetCenterY - targetHeight / 2,
+          left: rawTargetRect.left,
+          width: rawTargetRect.width,
+          height: targetHeight
+        };
+        // No explicit re-snap needed here for the landed case — once
+        // docked, the frame is width: 100% of the target and gets its own
+        // aspect-ratio (see .hero-video-frame.is-landed in styles.css and
+        // dockVideoIntoTarget), so it already resizes with it through
+        // plain CSS, independent of the target's own real height too.
+      }
+    }
+    recomputeVideoTiming();
+    window.addEventListener("resize", recomputeVideoTiming);
+    // Web fonts (Inter, the Horizon wordmark) swap in asynchronously —
+    // font-display: swap first paints with a fallback font, which can be
+    // narrower or wider than the real one. The "Δες"/"πώς δουλεύουμε"
+    // labels sit either side of #videoPanelTarget in a grid whose middle
+    // column depends on their rendered width, so that swap can nudge the
+    // target a few pixels once it happens — re-measuring after fonts.ready
+    // catches that instead of freezing the video at a rect measured
+    // against the fallback font's metrics.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(recomputeVideoTiming).catch(function () {});
+    }
+
+    var heroHeaderEls = [
+      document.querySelector(".hero .brand-badge"),
+      document.querySelector(".hero .hero-nav"),
+      document.querySelector(".hero .hero-top-right"),
+      document.querySelector(".hero .hero-scroll")
+    ].filter(Boolean);
+    var heroSloganEls = [document.querySelector(".hero .hero-copy")].filter(Boolean);
+
+    function clamp01(n) {
+      return Math.min(1, Math.max(0, n));
+    }
+
+    // The box the video morphs *from*, at the very start of the shrink —
+    // sized to the target's own aspect ratio (16:9) but scaled up to
+    // fully cover the viewport (like object-fit: cover, just applied to
+    // the frame itself rather than the <video> inside it), then centered.
+    // Using this instead of the viewport's raw, generally-different
+    // aspect ratio means the frame's own shape never changes across the
+    // whole shrink — only its size and position do — so object-fit: cover
+    // on the <video> crops by a constant amount throughout instead of
+    // subtly re-zooming the footage as the shape drifts toward 16:9.
+    function coverRectForAspect(viewportWidth, viewportHeight, aspect) {
+      var width, height;
+      if (viewportWidth / viewportHeight > aspect) {
+        width = viewportWidth;
+        height = width / aspect;
+      } else {
+        height = viewportHeight;
+        width = height * aspect;
+      }
+      return {
+        top: (viewportHeight - height) / 2,
+        left: (viewportWidth - width) / 2,
+        width: width,
+        height: height
+      };
+    }
+
+    function fadeElsByProgress(els, progress, fadeEnd) {
+      var t = clamp01(progress / fadeEnd);
+      var opacity = String(1 - t);
+      var pointerEvents = t >= 1 ? "none" : "auto";
+      els.forEach(function (el) {
+        el.style.opacity = opacity;
+        el.style.pointerEvents = pointerEvents;
+      });
+    }
+
+    // Both independent of the hero panel's own (much slower) ambient
+    // crossfade opacity — that one's still driving the hero→showcase
+    // handoff itself (activeIndex, pointer-events, etc. via panelStateAt)
+    // and stays at 1 through this whole window regardless, so these just
+    // multiply on top of it with no conflict. Header first (~1 notch),
+    // then the slogan a few notches later (~7) — right as the video
+    // itself starts its own shrink.
+    function updateHeroHeader(progress) {
+      fadeElsByProgress(heroHeaderEls, progress, HEADER_FADE_END);
+    }
+
+    function updateHeroSlogan(progress) {
+      fadeElsByProgress(heroSloganEls, progress, SLOGAN_FADE_END);
+    }
+
+    // Once fully landed, the frame stops being a fixed, JS-positioned
+    // overlay and is physically moved into #videoPanelTarget as a normal
+    // in-flow child instead, right beside the "Δες"/"πώς δουλεύουμε"
+    // labels — from that point it scrolls away with the rest of the hero
+    // panel like ordinary content once the sticky pin releases, rather
+    // than following the viewport. videoTargetRect (already matching
+    // exactly at this instant, since morphT just hit 1) is what the frame
+    // was sized/positioned to just before this runs, so the swap from
+    // fixed-tracking to static-in-flow is visually seamless.
+    function dockVideoIntoTarget() {
+      if (videoDocked || !heroVideoFrame || !videoPanelTarget) {
+        return;
+      }
+      videoDocked = true;
+      // relative, not static — the play button and the dark overlay are
+      // both position: absolute *inside* this frame, anchored to it; a
+      // static frame stops being a positioning context at all, so they'd
+      // fall back to the next positioned ancestor up the tree instead —
+      // .video-showcase-inner, which spans the full width including both
+      // labels, not just the video — sizing/centering themselves against
+      // that far wider box and spilling out over the "Δες"/"πώς
+      // δουλεύουμε" text instead of staying confined to the video panel.
+      // relative with no offset keeps the same normal-flow placement as
+      // static while still anchoring its own absolutely-positioned
+      // children correctly.
+      heroVideoFrame.style.position = "relative";
+      heroVideoFrame.style.top = "";
+      heroVideoFrame.style.left = "";
+      heroVideoFrame.style.width = "100%";
+      // Deliberately not height: 100% — that would size the frame off
+      // #videoPanelTarget's own real rendered height, which is exactly
+      // the value this whole approach doesn't trust. Its own aspect-ratio
+      // (see .hero-video-frame.is-landed in styles.css) derives height
+      // from its width instead, the same way videoTargetRect above does.
+      heroVideoFrame.style.height = "";
+      videoPanelTarget.appendChild(heroVideoFrame);
+      videoPanelTarget.style.visibility = "visible";
+    }
+
+    function undockVideoFromTarget() {
+      if (!videoDocked || !heroVideoFrame || !videoFrameHomeParent) {
+        return;
+      }
+      videoDocked = false;
+      videoPanelTarget.style.visibility = "hidden";
+      heroVideoFrame.style.position = "fixed";
+      videoFrameHomeParent.insertBefore(heroVideoFrame, videoFrameHomeNextSibling);
+    }
+
+    function setVideoPlaying(playing) {
+      videoPlaying = playing;
+      if (heroVideoFrame) {
+        heroVideoFrame.classList.toggle("is-playing", playing);
+      }
+    }
+
+    if (heroVideoPlay && heroVideo && heroVideoFrame) {
+      heroVideoPlay.addEventListener("click", function () {
+        heroVideo.muted = false;
+        heroVideo.currentTime = 0;
+        heroVideo.play().catch(function () {});
+        setVideoPlaying(true);
+      });
+      heroVideo.addEventListener("pause", function () {
+        if (videoLanded) {
+          setVideoPlaying(false);
+        }
+      });
+      heroVideo.addEventListener("ended", function () {
+        setVideoPlaying(false);
+      });
+    }
+
+    function updateHeroVideo(progress) {
+      if (!heroVideoFrame || !heroVideo || !videoPanelTarget) {
+        return;
+      }
+
+      var morphT = clamp01((progress - VIDEO_MORPH_START) / (VIDEO_MORPH_END - VIDEO_MORPH_START));
+      var isLanded = morphT >= 1;
+      var wasLanded = videoLanded;
+
+      if (isLanded && !wasLanded) {
+        videoLanded = true;
+        heroVideoFrame.classList.add("is-landed");
+        // Keeps playing (muted, looping) once landed rather than pausing —
+        // the play button below is purely an "unmute and watch it with
+        // sound from the start" affordance, not a start/stop control.
+      } else if (!isLanded && wasLanded) {
+        videoLanded = false;
+        heroVideoFrame.classList.remove("is-landed");
+        setVideoPlaying(false);
+        heroVideo.muted = true;
+        heroVideo.currentTime = 0;
+        heroVideo.play().catch(function () {});
+        // Must undock (back to position: fixed) before the lerp below can
+        // move it at all — a statically in-flow element ignores top/left.
+        undockVideoFromTarget();
+      }
+
+      // The "Δες"/"πώς δουλεύουμε" labels (and the invisible target between
+      // them) fade in over the same window the video shrinks through, so
+      // they settle into place exactly as it lands rather than appearing
+      // as a separate step.
+      if (videoShowcaseInner) {
+        videoShowcaseInner.style.opacity = String(morphT);
+        videoShowcaseInner.style.pointerEvents = morphT >= 1 ? "auto" : "none";
+      }
+
+      // Skip repositioning only once *already* landed (and docked) as of
+      // the previous tick — the tick that first lands it (isLanded &&
+      // !wasLanded, just above) still needs to run the code below, with
+      // morphT pinned at 1, so it actually gets set to the target's exact
+      // rect *before* docking hands it off. Skipping unconditionally on
+      // isLanded would leave it stuck wherever the previous tick's lerp
+      // happened to land (or, on a jump straight to the pinned range's
+      // end with no previous tick at all, at its untouched CSS default of
+      // full-viewport).
+      if (isLanded && wasLanded) {
+        return;
+      }
+
+      var targetRect = videoTargetRect;
+      var heroRect = coverRectForAspect(window.innerWidth, window.innerHeight, targetRect.width / targetRect.height);
+
+      heroVideoFrame.style.top = lerp(heroRect.top, targetRect.top, morphT) + "px";
+      heroVideoFrame.style.left = lerp(heroRect.left, targetRect.left, morphT) + "px";
+      heroVideoFrame.style.width = lerp(heroRect.width, targetRect.width, morphT) + "px";
+      heroVideoFrame.style.height = lerp(heroRect.height, targetRect.height, morphT) + "px";
+      heroVideoFrame.style.borderRadius = lerp(0, 20, morphT) + "px";
+
+      // Now that it's sized/positioned to match the target exactly (morphT
+      // is 1 on this tick), hand off from fixed-tracking to docked in-flow
+      // — seamless, since the two states are visually identical right now.
+      if (isLanded && !wasLanded) {
+        dockVideoIntoTarget();
+      }
+    }
+
     var panels = Array.prototype.slice.call(pinWrap.querySelectorAll(".panel"));
     if (!panels.length) {
       return;
@@ -372,12 +675,12 @@
     // no longer applied as a real CSS blur (the atom stays crisp) — it's
     // kept only as an abstract "spread" input to the watermark mask radius
     // below, same as it always fed that calculation.
+    // Hero is the only pinned panel now (Services onward scroll normally
+    // below, see index.html) — these are just its own start/end drift
+    // waypoints across that one panel's pinned dwell, not one per panel.
     var blobStops = [
-      { left: 78, top: 46, opacity: 0.55, scale: 0.3, blur: 38 },  // hero
-      { left: 84, top: 26, opacity: 0.3, scale: 0.62, blur: 70 },  // about — top-right
-      { left: 14, top: 64, opacity: 0.22, scale: 1.0, blur: 90 },  // services — bottom-left
-      { left: 82, top: 70, opacity: 0.24, scale: 0.92, blur: 90 }, // work — bottom-right
-      { left: 85, top: 48, opacity: 0.24, scale: 0.85, blur: 90 }  // contact — right side, clear of the form
+      { left: 78, top: 46, opacity: 0.55, scale: 0.3, blur: 38 }, // start
+      { left: 88, top: 82, opacity: 0.2, scale: 0.55, blur: 70 }  // end — corner, clear of the landed video panel
     ];
 
     function lerp(a, b, t) {
@@ -405,6 +708,16 @@
     // opacity resolves faster than scale within the same window, so the
     // crossfade reads as a quick zoom rather than a lingering fade.
     function panelStateAt(index, count, progress) {
+      // Just hero now (Services onward are normal-scroll, and the video
+      // showcase moved inside the hero panel itself — see index.html) —
+      // no crossfade partner to fade out for, so it just stays fully
+      // opaque for its whole pinned dwell. Scrolling further reveals what
+      // comes next via the sticky pin-stage naturally unsticking and
+      // scrolling away, not via this opacity fade.
+      if (count === 1) {
+        return { opacity: 1, scale: 1 };
+      }
+
       var slice = 1 / count;
       var start = Math.max(0, index * slice - PANEL_MARGIN);
       var end = Math.min(1, (index + 1) * slice + PANEL_MARGIN);
@@ -485,6 +798,15 @@
         }
       });
 
+      // Runs after the panels' own opacity/scale are applied above, not
+      // before — #videoPanelTarget lives inside the "showcase" panel, and
+      // its rect needs to reflect *this* frame's transform, not the
+      // previous one, or the morph lags a frame behind and lands on a
+      // slightly-off size while showcase is still scaling in.
+      updateHeroVideo(progress);
+      updateHeroHeader(progress);
+      updateHeroSlogan(progress);
+
       // The floating pill navbar only makes sense once the hero (with its
       // own embedded nav) is no longer the panel in view — and even then,
       // only pops in on an upward scroll (checking back for it), staying
@@ -522,8 +844,6 @@
     // the moment it finishes — otherwise the two finish at the same instant
     // and the completed word is never actually seen before it dissolves.
     var heroSweepEnd = heroZoneEnd * 0.5;
-    var sweepAdvanceTriggered = false;
-    var sweepAdvanceTimer = null;
 
     // How much of the atom's own opacity to suppress when it's currently
     // passing behind the "ATOMIC STRATEGY" watermark letters — 1 right on
@@ -550,31 +870,15 @@
         var heroT = panelStateAt(0, panels.length, progress).opacity;
         var heroLocalT = heroSweepEnd > 0 ? Math.min(1, Math.max(0, progress / heroSweepEnd)) : 0;
 
-        // Once the sweep actually reaches the "Y" of STRATEGY, hand off to
-        // the next panel automatically instead of waiting on more manual
-        // scrolling — but only once per hero visit (resets once scrolled
-        // back well above the hero zone, so revisiting it can retrigger
-        // it). Driven off raw scroll progress rather than heroT: by the
-        // exact point heroLocalT reaches 1, hero's own crossfade opacity
-        // has already dropped to 0 too, so gating on heroT here would miss
-        // the moment almost every time. A short pause before advancing
-        // lets "ATOMIC STRATEGY" actually be seen fully lit, rather than
-        // the transition starting the instant it lands on the Y.
-        if (heroLocalT >= 0.999 && !sweepAdvanceTriggered && panelIds[1]) {
-          sweepAdvanceTriggered = true;
-          sweepAdvanceTimer = window.setTimeout(function () {
-            scrollToPanel(panelIds[1]);
-          }, 550);
-        } else if (progress < heroSweepEnd * 0.5) {
-          if (sweepAdvanceTimer) {
-            window.clearTimeout(sweepAdvanceTimer);
-            sweepAdvanceTimer = null;
-          }
-          sweepAdvanceTriggered = false;
-        }
-
         var left, top;
+        // .hero-watermark is currently disabled (display: none — see
+        // styles.css), which collapses this to a zero-size rect rather
+        // than null; guard on width too so the atom cleanly falls back to
+        // the plain blobStops drift path instead of sweeping toward (0, 0).
         var wordRect = heroWatermarkWord && heroT > 0.05 ? heroWatermarkWord.getBoundingClientRect() : null;
+        if (wordRect && wordRect.width === 0) {
+          wordRect = null;
+        }
         if (wordRect) {
           // Starts just off the word's left edge — so at rest (no scroll
           // yet) there's no glow at all — then sweeps left-to-right across

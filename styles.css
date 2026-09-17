@@ -1,6 +1,7 @@
 /* =========================================================
    Atomic Strategy — Brand & Marketing Strategy Studio
-   Design system: monochrome deep-blue, dusty denim as a small accent
+   Design system: Yale Blue/Deep Taupe darks, Powder Blue text,
+   Persimmon as the one warm accent
    Inter (display) + Open Sans (body) + Horizon (wordmark)
    ========================================================= */
 
@@ -20,49 +21,52 @@
   navigation: auto;
 }
 
-/* Previous accent palette, before the "Deep Space Blue Elegance" rebrand
-   below — kept here for an easy rollback if needed:
-   --bg-deep: #000000; --bg-base: #000000;
-   --bg-raised: #495867; --bg-raised-2: #577399;
-   --amber: #fe5f55; --amber-bright: #ff8177; --amber-dim: #d94a41;
-   --amber-glow: rgba(254, 95, 85, 0.28); --accent-ink: #495867;
-   --magenta: #bdd5ea; --magenta-bright: #d7e8f4;
-   --magenta-glow: rgba(189, 213, 234, 0.25);
-   --yellow: #fe5f55; --yellow-glow: rgba(254, 95, 85, 0.22);
-   --text-primary: #f7f7ff; --text-secondary: #bdd5ea; --text-muted: #8fa3b8;
+/* Previous accent palette, before the "Skyline Denim" rebrand below —
+   kept here for an easy rollback if needed:
+   --bg-deep: #450920; --bg-base: #450920;
+   --bg-raised: #a53860; --bg-raised-2: #b8496b;
+   --border-soft: rgba(249, 219, 189, 0.09); --border-strong: rgba(249, 219, 189, 0.2);
+   --amber: #ffa5ab; --amber-bright: #ffc2c6; --amber-dim: #e08890;
+   --amber-glow: rgba(255, 165, 171, 0.28); --accent-ink: #450920;
+   --magenta: #f9dbbd; --magenta-bright: #fce8d4;
+   --magenta-glow: rgba(249, 219, 189, 0.25);
+   --yellow: #ffa5ab; --yellow-glow: rgba(255, 165, 171, 0.22);
+   --text-primary: #f9dbbd; --text-secondary: #da627d; --text-muted: #8a5a68;
 */
 :root {
-  /* "Deep Space Blue Elegance" palette (coolors.co/palettes/popular/elegant) */
-  --bg-deep: #0d1321;   /* Ink Black */
-  --bg-base: #0d1321;
-  --bg-raised: #1d2d44;   /* Deep Space Blue */
-  --bg-raised-2: #3e5c76; /* Blue Slate */
-  --border-soft: rgba(240, 235, 216, 0.09);
-  --border-strong: rgba(240, 235, 216, 0.2);
+  /* "Skyline Denim" palette — Yale Blue/Deep Taupe backgrounds, Powder
+     Blue text, Persimmon as the one warm accent */
+  --bg-deep: #285185;    /* Yale Blue */
+  --bg-base: #285185;
+  --bg-raised: #6f4849;  /* Deep Taupe */
+  --bg-raised-2: #8d6667; /* lighter Deep Taupe, for a second raised layer */
+  --border-soft: rgba(204, 217, 226, 0.09);
+  --border-strong: rgba(204, 217, 226, 0.2);
 
-  /* Dusty Denim — used only as a small accent */
-  --amber: #748cab;
-  --amber-bright: #9bafc8;
-  --amber-dim: #5d7699;
-  --amber-glow: rgba(116, 140, 171, 0.28);
-  --accent-ink: #0d1321; /* Ink Black text on accent surfaces */
+  /* Persimmon — the one warm accent */
+  --amber: #d67940;
+  --amber-bright: #f4975e;
+  --amber-dim: #b66736;
+  --amber-glow: rgba(214, 121, 64, 0.28);
+  --accent-ink: #1c2f4d; /* dark ink for text on accent (Persimmon) surfaces */
 
-  /* Secondary accent for kickers, badges & doodles — Eggshell, the warm
-     counterpoint to the cool blue primary accent */
-  --magenta: #f0ebd8;
-  --magenta-bright: #f7f3e4;
-  --magenta-glow: rgba(240, 235, 216, 0.25);
-  --yellow: #748cab;
-  --yellow-glow: rgba(116, 140, 171, 0.22);
+  /* Secondary accent for kickers, badges & doodles — Powder Blue, the
+     cool counterpoint to the Persimmon primary accent */
+  --magenta: #ccd9e2;
+  --magenta-bright: #dbe8f1;
+  --magenta-glow: rgba(204, 217, 226, 0.25);
+  --yellow: #d67940;
+  --yellow-glow: rgba(214, 121, 64, 0.22);
 
   /* Text */
-  --text-primary: #f0ebd8;  /* Eggshell */
-  --text-secondary: #9bafc8; /* light Dusty Denim */
-  --text-muted: #647a91;
+  --text-primary: #ccd9e2;   /* Powder Blue */
+  --text-secondary: #ad8384; /* dusty rose-taupe */
+  --text-muted: #7a95b4;
 
   --font-display: "Inter", "Segoe UI", sans-serif;
   --font-body: "Open Sans", "Segoe UI", sans-serif;
   --font-wordmark: "Horizon", var(--font-display);
+  --font-heading: "Helvetica Neue", Arial, sans-serif;
 
   --radius-md: 14px;
   --radius-lg: 22px;
@@ -126,8 +130,8 @@ ul {
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-display);
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-weight: 700;
   line-height: 1.2;
   margin: 0 0 0.5em;
 }
@@ -161,10 +165,11 @@ p {
 }
 
 /* ---------- Intro loader ----------
-   "Atomic" stays put while the word below it cycles through a list (see
-   script.js) and settles on "Strategy" — spelling out the full brand name
-   before the loader fades out and hands off to the page underneath, which
-   has already been rendering (and animating in) behind it the whole time. */
+   The hero itself IS the loading screen — video already playing behind it,
+   nav/slogan/logo/explore hidden until the bar finishes (see the
+   body.is-loading rules further down) — with "Atomic"/the cycling word
+   overlaid on top of the video, settling on "Strategy" right as the bar
+   completes, then handing off into the hero reveal transition. */
 .loader {
   position: fixed;
   inset: 0;
@@ -172,7 +177,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-deep);
+  background: transparent;
   opacity: 1;
   visibility: visible;
   transition: opacity 0.6s ease, visibility 0s linear 0s;
@@ -203,6 +208,8 @@ body.is-loading {
   font-size: clamp(2.2rem, 7vw, 5rem);
   letter-spacing: 0.02em;
   color: var(--text-primary);
+  /* Extra legibility over the moving hero video underneath. */
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
 }
 
 .loader-cycle {
@@ -286,6 +293,24 @@ body.is-loading {
   box-shadow: 0 12px 32px var(--amber-glow);
 }
 
+/* The nav "Let's talk" CTA specifically — matches the hero/dark theme's
+   own Yale Blue rather than standing out in the accent color, so it reads
+   as part of the surrounding chrome instead of a pop-color button.
+   Hardcoded to the dark-theme blue (not var(--bg-*), which further
+   down the page resolves to the light theme's white — see #services
+   etc.) since this button appears both there and in the still-dark
+   hero/floating-nav. */
+.btn-cta-violet {
+  background: #285185;
+  color: #ccd9e2;
+  box-shadow: none;
+}
+
+.btn-cta-violet:hover {
+  background: #34659e;
+  box-shadow: 0 8px 20px rgba(40, 81, 133, 0.4);
+}
+
 .btn-ghost {
   background: transparent;
   border-color: var(--border-strong);
@@ -305,8 +330,8 @@ body.is-loading {
 /* ---------- Brand badge, top-left ---------- */
 .brand-badge {
   position: absolute;
-  top: 40px;
-  left: 40px;
+  top: 20px;
+  left: 20px;
   z-index: 2;
   display: inline-flex;
   text-decoration: none;
@@ -318,6 +343,31 @@ body.is-loading {
   filter: drop-shadow(0 0 10px var(--amber-glow));
 }
 
+/* Logo, nav options and slogan stay hidden while the hero doubles as the
+   loading screen, then fade in together once script.js's loader finish()
+   removes body.is-loading (bar complete) — reusing that existing timing
+   instead of adding new JS for the reveal. */
+.hero .brand-badge,
+.hero .hero-nav,
+.hero .hero-top-right,
+.hero .hero-copy,
+.hero .hero-scroll {
+  transition: opacity 0.8s ease 0.1s;
+}
+
+body.is-loading .hero .brand-badge,
+body.is-loading .hero .hero-nav,
+body.is-loading .hero .hero-top-right,
+body.is-loading .hero .hero-copy,
+body.is-loading .hero .hero-scroll {
+  /* !important: script.js's scroll-driven header/slogan fade sets an
+     inline opacity (starting at 1, at scroll progress 0) on these same
+     elements on load, which would otherwise beat this rule outright
+     regardless of selector specificity. */
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 .brand-badge-text {
   font-family: var(--font-display);
   font-weight: 700;
@@ -326,6 +376,17 @@ body.is-loading {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* The hero's own badge (top-left) reads white and considerably larger,
+   right in the corner — the floating pill nav reuses the same
+   .brand-badge-text markup/class at its original compact size and theme
+   color, so this is scoped to just the hero instance rather than changed
+   on the shared rule above. */
+.hero .brand-badge-text {
+  font-size: 2rem;
+  color: #fff;
 }
 
 /* ---------- Nav (embedded in hero) ----------
@@ -333,8 +394,8 @@ body.is-loading {
    the language switch stands separately, top-right. */
 .hero-top-right {
   position: absolute;
-  top: 40px;
-  right: 40px;
+  top: 24px;
+  right: 24px;
   z-index: 2;
   display: flex;
   align-items: center;
@@ -344,7 +405,7 @@ body.is-loading {
 /* ---------- Section nav, top-center ---------- */
 .hero-nav {
   position: absolute;
-  top: 40px;
+  top: 24px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
@@ -352,18 +413,20 @@ body.is-loading {
   gap: clamp(20px, 3vw, 36px);
 }
 
-.hero-nav a {
+.hero-nav a,
+.hero-nav .nav-dropdown-trigger {
   font-family: var(--font-display);
   font-size: 0.82rem;
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: #fff;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-.hero-nav a:hover {
+.hero-nav a:hover,
+.hero-nav .nav-dropdown-trigger:hover {
   color: var(--amber-bright);
 }
 
@@ -381,7 +444,9 @@ body.is-loading {
   align-items: center;
   gap: clamp(20px, 3vw, 40px);
   padding: 10px 10px 10px 22px;
-  background: var(--bg-raised);
+  background: transparent;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
@@ -401,13 +466,9 @@ body.is-loading {
 }
 
 .floating-nav-logo {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 0.03em;
-  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
-  white-space: nowrap;
 }
 
 .floating-nav-links {
@@ -628,6 +689,10 @@ body.is-loading {
   z-index: 0;
   pointer-events: none;
   user-select: none;
+  /* Disabled for now — flip this back to visible (and the matching rule
+     on .hero-watermark-fill below) to bring the "ATOMIC STRATEGY"
+     background wordmark back. */
+  display: none;
 }
 
 .hero-watermark-word {
@@ -660,6 +725,8 @@ body.is-loading {
   --blob-r: 0px;
   -webkit-mask-image: radial-gradient(circle var(--blob-r) at var(--blob-x) var(--blob-y), #000 0%, #000 55%, transparent 100%);
   mask-image: radial-gradient(circle var(--blob-r) at var(--blob-x) var(--blob-y), #000 0%, #000 55%, transparent 100%);
+  /* Disabled alongside .hero-watermark above — see the note there. */
+  display: none;
 }
 
 /* The atom "lights up" whatever letters it's currently passing behind —
@@ -770,10 +837,11 @@ body.is-loading {
 
 .hero-glow {
   position: absolute;
-  right: -10%;
-  top: 20%;
-  width: 46%;
-  height: 60%;
+  left: 50%;
+  top: 18%;
+  width: 60%;
+  height: 64%;
+  transform: translateX(-50%);
   background: radial-gradient(50% 50% at 50% 50%, var(--amber-glow), transparent 72%);
   filter: blur(20px);
   pointer-events: none;
@@ -784,30 +852,35 @@ body.is-loading {
   position: relative;
   z-index: 1;
   max-width: 780px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .hero-title {
   font-size: clamp(2.6rem, 6vw, 4.6rem);
-  color: var(--text-primary);
+  color: #fff;
   margin-bottom: 36px;
   letter-spacing: -0.01em;
 }
 
+/* Still gets its glow treatment, just in white rather than the accent
+   color — "all the letters in the hero should be white" per request. */
 .glow-text {
-  color: var(--amber-bright);
-  text-shadow: 0 0 14px var(--amber-glow);
+  color: #fff;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.5);
   animation: glowPulse 3.2s ease-in-out infinite;
 }
 
 @keyframes glowPulse {
-  0%, 100% { text-shadow: 0 0 12px var(--amber-glow); }
-  50% { text-shadow: 0 0 26px var(--amber-glow), 0 0 10px var(--amber-bright); }
+  0%, 100% { text-shadow: 0 0 12px rgba(255, 255, 255, 0.4); }
+  50% { text-shadow: 0 0 26px rgba(255, 255, 255, 0.6), 0 0 10px rgba(255, 255, 255, 0.8); }
 }
 
 .hero-scroll {
   position: absolute;
-  left: 40px;
+  left: 50%;
   bottom: 40px;
+  transform: translateX(-50%);
   z-index: 1;
   display: flex;
   align-items: center;
@@ -891,7 +964,14 @@ html.pin-mode .section {
 
 html.pin-mode #pinWrap {
   position: relative;
-  height: 500vh;
+  /* Only the hero + the video showcase are still pinned/crossfaded now —
+     Services onward scroll normally below this (see index.html). Sized so
+     the pinned range's scrollable distance (this minus one viewport) is
+     ~17 "notches" of ~100px each at a typical viewport height — matching
+     script.js's VIDEO_MORPH_END, so the pin releases into normal scroll
+     right as the video finishes landing rather than leaving a dead pinned
+     stretch after it. */
+  height: 289vh;
 }
 
 html.pin-mode .pin-stage {
@@ -904,8 +984,16 @@ html.pin-mode .pin-stage {
 /* A simple ring that trails the cursor (and follows the same scripted path
    as it drifts through the rest of the scroll) — script.js drives the same
    position/scale/opacity/rotation keyframes it always has; only the look
-   changed, from a multi-ring atom icon down to one clean circle. */
+   changed, from a multi-ring atom icon down to one clean circle.
+   Pin-mode only (no scroll-driven crossfade to drive it otherwise) — hidden
+   by default so its child's absolute/inset:0 never falls back to sizing
+   itself against the viewport instead of this box. */
+.pin-bg-atom {
+  display: none;
+}
+
 html.pin-mode .pin-bg-atom {
+  display: block;
   position: absolute;
   top: 46%;
   left: 78%;
@@ -923,6 +1011,277 @@ html.pin-mode .pin-bg-atom {
   border: 2px solid var(--amber);
   border-radius: 50%;
   box-shadow: 0 0 20px var(--amber-glow);
+}
+
+/* Hero background video that shrinks into a small framed panel as you
+   scroll, then freezes there — a fixed-position element (sibling of the
+   hero panel, not a child of it) so its own opacity/position stay
+   entirely under script.js's control rather than fading with the hero.
+   Its rect is interpolated every scroll tick between a full-viewport
+   cover and #videoPanelTarget's live position inside the hero (see
+   updateHeroVideo in script.js) — plain top/left/width/height, not a CSS
+   transition, since the values change continuously with scroll, not at
+   one discrete breakpoint. Once landed, script.js simply stops updating
+   these and it stays exactly where it is — still fixed, so it remains on
+   screen (and keeps playing) no matter how much further you scroll past
+   it. Pin-mode only: without the scroll-driven crossfade there's no
+   "progress" to morph against, so it would otherwise just sit fixed over
+   the whole page on a normal stacked layout. */
+html.pin-mode .hero-video-frame {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+html:not(.pin-mode) .hero-video-frame {
+  display: none;
+}
+
+/* Without pin-mode there's no scroll "progress" driving the morph, so the
+   showcase section would otherwise just show its heading over an empty,
+   permanently invisible placeholder box — skip the whole section there. */
+html:not(.pin-mode) #showcase {
+  display: none;
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13, 19, 33, 0.5), rgba(13, 19, 33, 0.72));
+  transition: opacity 0.3s ease;
+}
+
+html.pin-mode .hero-video-frame.is-landed {
+  /* Above the active panel's own content (so the landed panel + its play
+     button are actually clickable) — but only once landed. While it's
+     still full-bleed over the hero, it stays at z-index: 0 specifically so
+     the hero's own nav/badge/copy (z-index: 2, see .hero-nav etc.) keep
+     rendering on top of it, as a background should. Needs the same
+     `html.pin-mode` prefix as the base rule below, not just a matching
+     class count — a bare `.hero-video-frame.is-landed` selector is less
+     specific than `html.pin-mode .hero-video-frame` (extra type selector)
+     and would lose to it regardless of source order. */
+  z-index: 10;
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  /* Own aspect-ratio rather than height: 100% of #videoPanelTarget once
+     docked (see dockVideoIntoTarget in script.js) — derives height from
+     its own (real, 100%-of-target) width directly, so the frame's shape
+     never depends on #videoPanelTarget's own rendered height agreeing
+     with this at all. Needs height: auto here too — aspect-ratio is
+     ignored whenever height already has a definite value, and the base
+     rule below still says height: 100vh (that's only meant for the
+     pre-landed, position: fixed state); clearing the inline height in
+     dockVideoIntoTarget isn't enough on its own to un-set that. */
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+.hero-video-frame.is-landed .hero-video-overlay {
+  opacity: 0.3;
+}
+
+.hero-video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(240, 235, 216, 0.94);
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.hero-video-frame.is-landed .hero-video-play {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s;
+}
+
+.hero-video-frame.is-playing .hero-video-play {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.hero-video-play:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+/* Lives inside the hero panel itself now, not a separate pinned section —
+   centered over the same spot the hero title occupies, fading in via
+   script.js (tied to the same morphT that drives the video's own shrink)
+   as the header/slogan fade out, so the video settles into this flanked
+   layout right in place rather than handing off to another section. Once
+   the hero's own pinned dwell ends, the whole panel (video now docked
+   in-flow inside #videoPanelTarget below) scrolls away normally with it. */
+.video-showcase-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  width: min(1100px, calc(100% - 80px));
+  opacity: 0;
+  /* Grid, not flex: "Δες" and "πώς δουλεύουμε" are very different widths,
+     so space-between (or any flex-grow split) would shift the middle
+     column off true center by however much those two labels differ. Two
+     equal 1fr side columns center the middle column exactly regardless
+     of what's in the side ones. */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: clamp(16px, 4vw, 48px);
+}
+
+.video-showcase-label {
+  /* Capped width forces long labels (e.g. "πώς δουλεύουμε") to wrap
+     reliably instead of overflowing sideways into the video — a bare 1fr
+     grid track only guarantees room for the longest unbroken word, not
+     the whole phrase, so without this a long enough label could still
+     spill over the video's edge at some viewport widths. */
+  max-width: 200px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.video-showcase-label:first-child {
+  justify-self: end;
+  text-align: right;
+}
+
+.video-showcase-label:last-child {
+  justify-self: start;
+  text-align: left;
+}
+
+.video-panel-target {
+  width: 640px;
+  max-width: 100%;
+  /* Fixed 16:9 — matching the viewport's own (usually quite wide/
+     landscape) aspect ratio instead made the landed panel read as too
+     wide, even though it avoided object-fit: cover subtly re-cropping
+     the footage as it lands. Traded back for the cleaner, more familiar
+     video-panel shape. */
+  aspect-ratio: 16 / 9;
+  visibility: hidden;
+}
+
+/* ---------- Trusted-by logo marquee ---------- */
+.trusted-by-section {
+  padding: 64px 0 88px;
+}
+
+.trusted-by-head {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.trusted-by-label {
+  display: inline-block;
+  padding: 10px 22px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+}
+
+/* Two rows, each an overflow-hidden viewport onto a track holding the logo
+   set twice back to back — animating the track exactly one set-width to
+   the left (or right, for the second row) loops seamlessly, since the
+   moment the first copy scrolls fully out, the second is sitting in the
+   exact spot the first started in. */
+.logo-marquee {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.logo-marquee-row {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.logo-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 18px;
+  animation: logo-marquee 32s linear infinite;
+}
+
+.logo-marquee-track-reverse {
+  animation-name: logo-marquee-reverse;
+  animation-duration: 36s;
+}
+
+@keyframes logo-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes logo-marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+.logo-tile {
+  flex: 0 0 auto;
+  width: 160px;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 22px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+}
+
+.logo-tile img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-marquee-track {
+    animation: none;
+  }
 }
 
 html.pin-mode .panel {
@@ -955,6 +1314,34 @@ html.pin-mode #top {
 
 .section-alt {
   background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.02) 20%, rgba(255, 255, 255, 0.02) 80%, transparent);
+}
+
+/* Below the logo carousel (which stays on the dark theme, right after
+   the video), the rest of the page switches to a white background —
+   redefining the theme variables here (rather than overriding every
+   individual component) lets everything downstream that already reads
+   var(--bg-raised)/var(--text-primary)/etc. — cards, kickers, borders,
+   shadows — pick up light-appropriate values for free through
+   inheritance, with no separate light-mode rules to keep in sync. */
+#services,
+#work,
+#about,
+#contact {
+  --bg-deep: #fff;
+  --bg-base: #fff;
+  --bg-raised: #eef2f5;
+  --bg-raised-2: #e2e9ee;
+  --border-soft: rgba(40, 81, 133, 0.08);
+  --border-strong: rgba(40, 81, 133, 0.18);
+  --magenta: #6f4849;
+  --magenta-bright: #285185;
+  --magenta-glow: rgba(40, 81, 133, 0.12);
+  --text-primary: #183150;
+  --text-secondary: #6f4849;
+  --text-muted: #9c9195;
+  --shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.08);
+  background: var(--bg-base);
+  color: var(--text-primary);
 }
 
 .section-head {
@@ -1335,7 +1722,6 @@ html.pin-mode #top {
   }
 
   .hero-scroll {
-    left: 24px;
     bottom: 24px;
   }
 
@@ -1359,11 +1745,12 @@ html.pin-mode #top {
 @media (max-width: 620px) {
   .hero {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
   }
 
   .hero-scroll {
     position: static;
+    transform: none;
     margin-top: 24px;
   }
 }
