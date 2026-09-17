@@ -84,7 +84,7 @@
       "nav.servicesFooterPrompt": "Δεν ξέρεις από πού να ξεκινήσεις;",
       "nav.servicesFooterCta": "Κλείσε ένα ραντεβού →",
 
-      "hero.title": "Marketing that brings <span class=\"glow-text\">brands</span> <span class=\"glow-text\">forward</span>.",
+      "hero.title": "<span class=\"hero-title-line hero-title-line-1\">Marketing that brings</span><span class=\"hero-title-line hero-title-line-2\"><span class=\"glow-text\">brands</span> <span class=\"glow-text\">forward</span>.</span>",
       "hero.scroll": "Explore",
 
       "about.kicker": "Σχετικά",
@@ -140,7 +140,7 @@
       "nav.servicesFooterPrompt": "Not sure where to start?",
       "nav.servicesFooterCta": "Book a strategy call →",
 
-      "hero.title": "Marketing that brings <span class=\"glow-text\">brands</span> <span class=\"glow-text\">forward</span>.",
+      "hero.title": "<span class=\"hero-title-line hero-title-line-1\">Marketing that brings</span><span class=\"hero-title-line hero-title-line-2\"><span class=\"glow-text\">brands</span> <span class=\"glow-text\">forward</span>.</span>",
       "hero.scroll": "Explore",
 
       "about.kicker": "About",

@@ -856,11 +856,48 @@ body.is-loading .hero .hero-scroll {
   text-align: center;
 }
 
+/* The hero's own copy breaks out of that centered 780px column and off
+   the hero's default vertical centering — both title lines now sit
+   together at the hero's bottom edge, one at the left, one at the right
+   (see .hero-title below). */
+.hero .hero-inner {
+  /* .hero is a flex row with this as its only flow child, so without an
+     explicit width it shrink-wraps to content instead of filling the
+     section — which is exactly what let max-width: none quietly do
+     nothing. */
+  width: 100%;
+  max-width: none;
+  text-align: initial;
+  align-self: flex-end;
+}
+
 .hero-title {
+  /* Inter at its heaviest weight instead of the generic Helvetica Neue
+     heading font — more character for the one line on the page meant to
+     grab attention, with no extra font load since Inter's already here
+     for the nav/buttons. */
+  font-family: var(--font-display);
+  font-weight: 800;
   font-size: clamp(2.6rem, 6vw, 4.6rem);
   color: #fff;
-  margin-bottom: 36px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 5vw, 64px);
+}
+
+.hero-title-line-1,
+.hero-title-line-2 {
+  text-align: left;
+  max-width: 65%;
+}
+
+.hero-title-line-1 {
+  align-self: flex-start;
+}
+
+.hero-title-line-2 {
+  align-self: flex-end;
 }
 
 /* Still gets its glow treatment, just in white rather than the accent
