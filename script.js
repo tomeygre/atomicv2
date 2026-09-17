@@ -617,12 +617,14 @@
         undockVideoFromTarget();
       }
 
-      // The "Δες"/"πώς δουλεύουμε" labels (and the invisible target between
-      // them) fade in over the same window the video shrinks through, so
-      // they settle into place exactly as it lands rather than appearing
-      // as a separate step.
+      // The caption (and the invisible target above it) fades in only over
+      // the tail end of the shrink, not the whole window — the video is
+      // still much bigger than its landed size through most of morphT and
+      // would otherwise visibly pass behind/through the caption's fixed
+      // spot below it before finishing the shrink.
       if (videoShowcaseInner) {
-        videoShowcaseInner.style.opacity = String(morphT);
+        var captionT = clamp01((morphT - 0.85) / 0.15);
+        videoShowcaseInner.style.opacity = String(captionT);
         videoShowcaseInner.style.pointerEvents = morphT >= 1 ? "auto" : "none";
       }
 
