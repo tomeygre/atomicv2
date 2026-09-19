@@ -7,9 +7,16 @@
   (function () {
     try {
       var supportsSticky = window.CSS && CSS.supports && CSS.supports("position", "sticky");
-      var wideEnough = window.innerWidth > 860;
-      if (supportsSticky && wideEnough) {
+      if (supportsSticky) {
         document.documentElement.classList.add("pin-mode");
+      }
+      // Every reload / restart starts at the hero: no restored scroll
+      // position, and no leftover #anchor jumping past it.
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+      if (location.hash) {
+        history.replaceState(null, "", location.pathname + location.search);
       }
     } catch (e) {}
   })();
@@ -32,7 +39,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=202609209">
+<link rel="stylesheet" href="styles.css?v=202609218">
 </head>
 <body class="is-loading">
 
@@ -51,8 +58,6 @@
     <span class="brand-badge-text">Atomic<br>Strategy</span>
   </a>
   <nav class="floating-nav-links" aria-label="Κύρια πλοήγηση">
-    <a href="#about" data-i18n="nav.about">Σχετικά</a>
-
     <div class="nav-dropdown">
       <button type="button" class="nav-dropdown-trigger" id="servicesDropdownTriggerFloating" aria-expanded="false" aria-controls="servicesDropdownPanelFloating" data-i18n="nav.services">Υπηρεσίες</button>
       <div class="nav-dropdown-panel" id="servicesDropdownPanelFloating" aria-hidden="true">
@@ -93,7 +98,8 @@
       </div>
     </div>
 
-    <a href="case-studies.html" data-i18n="nav.work">Case Studies</a>
+    <a href="#about" data-i18n="nav.about">Σχετικά</a>
+    <a href="#contact" data-i18n="nav.contact">Επικοινωνία</a>
   </nav>
   <a href="#contact" class="btn btn-primary btn-small btn-cta-violet">Let's talk</a>
 </header>
@@ -126,8 +132,6 @@
     </a>
 
     <nav class="hero-nav" aria-label="Κύρια πλοήγηση">
-      <a href="#about" data-i18n="nav.about">Σχετικά</a>
-
       <div class="nav-dropdown">
         <button type="button" class="nav-dropdown-trigger" id="servicesDropdownTrigger" aria-expanded="false" aria-controls="servicesDropdownPanel" data-i18n="nav.services">Υπηρεσίες</button>
         <div class="nav-dropdown-panel" id="servicesDropdownPanel" aria-hidden="true">
@@ -168,7 +172,7 @@
         </div>
       </div>
 
-      <a href="case-studies.html" data-i18n="nav.work">Case Studies</a>
+      <a href="#about" data-i18n="nav.about">Σχετικά</a>
       <a href="#contact" data-i18n="nav.contact">Επικοινωνία</a>
     </nav>
 
@@ -242,129 +246,88 @@
       <span class="doodle doodle-ring doodle-5"></span>
       <span class="doodle doodle-plus doodle-6"></span>
     </div>
+    <div class="svc-pin-wrap" id="svcPinWrap">
+    <div class="svc-pin-stage">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="section-kicker" data-i18n="services.kicker">Υπηρεσίες</span>
-        <h2 data-i18n="services.heading">Πώς μπορούμε να βοηθήσουμε</h2>
-        <p class="section-sub" data-i18n="services.subheading">
-          Social, διαφημίσεις και web — χτισμένα γύρω από το funnel που πραγματικά ακολουθούν οι πελάτες σου.
-        </p>
-      </div>
+      <div class="svc-split">
+        <div class="svc-lead reveal">
+          <span class="section-kicker" data-i18n="services.kicker">Οι Υπηρεσίες μας</span>
+          <h2 class="svc-lead-title" data-i18n="services.heading">Τι κάνουμε για εσένα.</h2>
+          <p class="svc-lead-text" data-i18n="services.subheading">
+            Social, διαφημίσεις και web — χτισμένα γύρω από το funnel που πραγματικά ακολουθούν οι πελάτες σου, όχι ένα ημερολόγιο περιεχομένου για το θεαθήναι.
+          </p>
+        </div>
 
-      <div class="services-grid">
-        <article class="service-card reveal">
-          <div class="service-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
-          <h3 data-i18n="service1.title">Διαχείριση Social Media</h3>
-          <p data-i18n="service1.desc">Στρατηγική, παραγωγή και διαχείριση περιεχομένου για Meta &amp; TikTok, προσαρμοσμένα στο brand σου.</p>
-        </article>
+        <div class="svc-accordion reveal">
+          <div class="acc-row is-open">
+            <button class="acc-summary" type="button" aria-expanded="true">
+              <span data-i18n="service1.title">Διαχείριση Social Media</span>
+              <span class="acc-arrow" aria-hidden="true"></span>
+            </button>
+            <span class="acc-progress" aria-hidden="true"><span class="acc-progress-fill"></span></span>
+            <div class="acc-body">
+              <div class="acc-body-inner">
+                <span class="acc-sub" data-i18n="services.svc1Sub">(Meta &amp; TikTok)</span>
+                <ol class="svc-bullets">
+                  <li data-i18n="services.svc1B1">Ανάπτυξη εξατομικευμένης στρατηγικής marketing για την επιχείρησή σου</li>
+                  <li data-i18n="services.svc1B2">Δημιουργία καινοτόμων concepts για την αποτελεσματική προβολή του brand σου</li>
+                  <li data-i18n="services.svc1B3">Παραγωγή περιεχομένου ανάλογα με τη συχνότητα που χρειάζεσαι (+ εύρεση μοντέλων)</li>
+                  <li data-i18n="services.svc1B4">Επεξεργασία περιεχομένου ανάλογα με την πλατφόρμα</li>
+                  <li data-i18n="services.svc1B5">Ανέβασμα με SEO-optimized περιγραφές</li>
+                </ol>
+              </div>
+            </div>
+          </div>
 
-        <article class="service-card reveal">
-          <div class="service-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></div>
-          <h3 data-i18n="service2.title">Meta &amp; Google Ads</h3>
-          <p data-i18n="service2.desc">Καμπάνιες βασισμένες στο customer funnel, με στοχευμένο retargeting και μηνιαίο reporting.</p>
-        </article>
+          <div class="acc-row">
+            <button class="acc-summary" type="button" aria-expanded="false">
+              <span data-i18n="service2.title">Meta &amp; Google Ads</span>
+              <span class="acc-arrow" aria-hidden="true"></span>
+            </button>
+            <span class="acc-progress" aria-hidden="true"><span class="acc-progress-fill"></span></span>
+            <div class="acc-body">
+              <div class="acc-body-inner">
+                <ol class="svc-bullets">
+                  <li data-i18n="services.svc2B1">Ανάπτυξη στρατηγικής βασισμένης στο Customer Funnel</li>
+                  <li data-i18n="services.svc2B2">Δημιουργία και διαχείριση καμπανιών</li>
+                  <li data-i18n="services.svc2B3">Copywriting διαφημίσεων</li>
+                  <li data-i18n="services.svc2B4">Δημιουργία Retargeting Audiences (η καλύτερη τακτική)</li>
+                  <li data-i18n="services.svc2B5">Παραγωγή creative για τις διαφημίσεις (αν χρειαστεί)</li>
+                  <li data-i18n="services.svc2B6">Διαχείριση budget &amp; μηνιαία αναφορά</li>
+                </ol>
+              </div>
+            </div>
+          </div>
 
-        <article class="service-card reveal">
-          <div class="service-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-          <h3 data-i18n="service3.title">Κατασκευή Ιστοσελίδων</h3>
-          <p data-i18n="service3.desc">Γρήγορες, custom ιστοσελίδες φτιαγμένες να μετατρέπουν — όχι απλώς να δείχνουν ωραία.</p>
-        </article>
+          <div class="acc-row">
+            <button class="acc-summary" type="button" aria-expanded="false">
+              <span data-i18n="service3.title">Κατασκευή Ιστοσελίδων</span>
+              <span class="acc-arrow" aria-hidden="true"></span>
+            </button>
+            <span class="acc-progress" aria-hidden="true"><span class="acc-progress-fill"></span></span>
+            <div class="acc-body">
+              <div class="acc-body-inner">
+                <p class="acc-sub" data-i18n="service3.desc">Γρήγορες, custom ιστοσελίδες φτιαγμένες να μετατρέπουν — όχι απλώς να δείχνουν ωραία.</p>
+              </div>
+            </div>
+          </div>
 
-        <article class="service-card reveal">
-          <div class="service-icon" aria-hidden="true"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-          <h3 data-i18n="service4.title">Brand Strategy</h3>
-          <p data-i18n="service4.desc">Θέση, αφήγηση και ταυτότητα που κάνουν το brand σου να ξεχωρίζει από το πλήθος.</p>
-        </article>
+          <div class="acc-row">
+            <button class="acc-summary" type="button" aria-expanded="false">
+              <span data-i18n="service4.title">Brand Strategy</span>
+              <span class="acc-arrow" aria-hidden="true"></span>
+            </button>
+            <span class="acc-progress" aria-hidden="true"><span class="acc-progress-fill"></span></span>
+            <div class="acc-body">
+              <div class="acc-body-inner">
+                <p class="acc-sub" data-i18n="service4.desc">Θέση, αφήγηση και ταυτότητα που κάνουν το brand σου να ξεχωρίζει από το πλήθος.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
-
-  <!-- ============ WORK / CASE STUDIES ============ -->
-  <section class="section" id="work">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="section-kicker" data-i18n="work.kicker">Case Studies</span>
-        <h2 data-i18n="work.heading">Brands που πήραμε ένα βήμα παραπέρα</h2>
-        <p class="section-sub" data-i18n="work.subheading">
-          Οκτώ brands, μία στρατηγική τη φορά.
-        </p>
-      </div>
-
-      <div class="work-grid">
-
-        <article class="work-card reveal">
-          <div class="work-media is-logo"><img src="assets/clients/gohan.png" alt="Gohan" loading="lazy"></div>
-          <div class="work-body">
-            <h3>Gohan</h3>
-            <p>Content &amp; social media management for a modern dining brand.</p>
-            <ul class="tag-list"><li>Social Media</li><li>Content</li></ul>
-          </div>
-        </article>
-
-        <article class="work-card reveal">
-          <div class="work-media is-logo"><img src="assets/clients/saitis nektarios.png" alt="Saitis Nektarios" loading="lazy"></div>
-          <div class="work-body">
-            <h3>Saitis Nektarios</h3>
-            <p>Social media management &amp; brand content.</p>
-            <ul class="tag-list"><li>Branding</li><li>Social Media</li></ul>
-          </div>
-        </article>
-
-        <article class="work-card reveal">
-          <div class="work-media"><img src="assets/clients/kahu salon.jpeg" alt="Kahu Salon" loading="lazy"></div>
-          <div class="work-body">
-            <h3>Kahu Salon</h3>
-            <p>Social media management for a contemporary hair salon.</p>
-            <ul class="tag-list"><li>Social Media</li><li>Beauty</li></ul>
-          </div>
-        </article>
-
-        <article class="work-card reveal">
-          <div class="work-media"><img src="assets/clients/troulis.jpg" alt="Troulis" loading="lazy"></div>
-          <div class="work-body">
-            <h3>Troulis</h3>
-            <p>Content &amp; social growth for a jewelry brand.</p>
-            <ul class="tag-list"><li>Jewelry</li><li>Social Media</li></ul>
-          </div>
-        </article>
-
-        <article class="work-card reveal">
-          <div class="work-media"><img src="assets/clients/puertoink.jpg" alt="Puerto Ink" loading="lazy"></div>
-          <div class="work-body">
-            <h3>Puerto Ink</h3>
-            <p>Social media management for a tattoo studio.</p>
-            <ul class="tag-list"><li>Social Media</li><li>Tattoo Studio</li></ul>
-          </div>
-        </article>
-
-        <article class="work-card reveal">
-          <div class="work-media is-logo"><img src="assets/clients/remax.jpeg" alt="Remax" loading="lazy"></div>
-          <div class="work-body">
-            <h3>Remax</h3>
-            <p>Social media &amp; content for a real estate office.</p>
-            <ul class="tag-list"><li>Real Estate</li><li>Content</li></ul>
-          </div>
-        </article>
-
-        <article class="work-card reveal">
-          <div class="work-media is-logo"><img src="assets/clients/candle lena.webp" alt="Candle Lena" loading="lazy"></div>
-          <div class="work-body">
-            <h3>Candle Lena</h3>
-            <p>Brand storytelling for a candle studio.</p>
-            <ul class="tag-list"><li>Branding</li><li>Content</li></ul>
-          </div>
-        </article>
-
-        <article class="work-card reveal">
-          <div class="work-media is-logo"><img src="assets/clients/pink.jpeg" alt="Pink" loading="lazy"></div>
-          <div class="work-body">
-            <h3>Pink</h3>
-            <p>Social media management &amp; content production.</p>
-            <ul class="tag-list"><li>Social Media</li><li>Content</li></ul>
-          </div>
-        </article>
-
-      </div>
+    </div>
     </div>
   </section>
 
@@ -376,27 +339,43 @@
         <h2 data-i18n="about.heading">Λίγα λόγια για εμάς</h2>
       </div>
 
-      <div class="about-grid reveal">
-        <p class="about-body" data-i18n="about.body">
-          Το Atomic Strategy είναι ένα boutique brand &amp; marketing strategy studio. Δουλεύουμε με brands που θέλουν να
-          ξεχωρίσουν από το πλήθος, συνδυάζοντας στρατηγική με δημιουργικό περιεχόμενο για να χτίσουν ισχυρή ψηφιακή
-          παρουσία και να πετύχουν ουσιαστική ανάπτυξη.
-        </p>
+      <p class="about-body reveal" data-i18n="about.body">
+        Το Atomic Strategy είναι ένα boutique brand &amp; marketing strategy studio. Δουλεύουμε με brands που θέλουν να
+        ξεχωρίσουν από το πλήθος, συνδυάζοντας στρατηγική με δημιουργικό περιεχόμενο για να χτίσουν ισχυρή ψηφιακή
+        παρουσία και να πετύχουν ουσιαστική ανάπτυξη.
+      </p>
 
-        <dl class="about-stats">
-          <div class="stat">
-            <dt class="stat-num">5×</dt>
-            <dd class="stat-label" data-i18n="about.stat1Label">αύξηση κοινού στο Instagram</dd>
+      <div class="results reveal">
+        <p class="results-kicker">
+          <span class="results-dot" aria-hidden="true"></span>
+          <span data-i18n="results.kicker">Οργανικά αποτελέσματα των πελατών μας</span>
+        </p>
+        <div class="results-grid">
+          <div class="result-stat">
+            <p class="result-num">5×</p>
+            <p class="result-label" data-i18n="results.l1">Αύξηση κοινού στο Instagram</p>
           </div>
-          <div class="stat">
-            <dt class="stat-num">+400%</dt>
-            <dd class="stat-label" data-i18n="about.stat2Label">αύξηση followers</dd>
+          <div class="result-stat">
+            <p class="result-num">+400%</p>
+            <p class="result-label" data-i18n="results.l2">Αύξηση followers</p>
           </div>
-          <div class="stat">
-            <dt class="stat-num">500K+</dt>
-            <dd class="stat-label" data-i18n="about.stat3Label">οργανικές προβολές για τους πελάτες μας</dd>
+          <div class="result-stat">
+            <p class="result-num">20K–200K</p>
+            <p class="result-label" data-i18n="results.l3">Οργανικές προβολές ανά περιεχόμενο</p>
           </div>
-        </dl>
+          <div class="result-stat">
+            <p class="result-num">500K+</p>
+            <p class="result-label" data-i18n="results.l4">Οργανικές προβολές σε όλους τους λογαριασμούς που διαχειριζόμαστε</p>
+          </div>
+          <div class="result-stat">
+            <p class="result-num">0 → 1K</p>
+            <p class="result-label" data-i18n="results.l5">Κοινό TikTok χτισμένο από το μηδέν</p>
+          </div>
+          <div class="result-stat">
+            <p class="result-num">+400%</p>
+            <p class="result-label" data-i18n="results.l6">Ανάπτυξη TikTok σε 30 μέρες</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -449,6 +428,6 @@
 
 </main>
 
-<script src="script.js?v=202609209"></script>
+<script src="script.js?v=202609218"></script>
 </body>
 </html>

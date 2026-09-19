@@ -1,6 +1,16 @@
 (function () {
   "use strict";
 
+  // Always begin at the top (hero), including when the page is restored from
+  // the back/forward cache. The pinned-scroll timing below reads scroll
+  // position on init, so this has to run before any of it.
+  window.scrollTo(0, 0);
+  window.addEventListener("pageshow", function (e) {
+    if (e.persisted) {
+      window.scrollTo(0, 0);
+    }
+  });
+
   /* ---------------- intro loader ---------------- */
   // Runs immediately (not on DOMContentLoaded) since this script sits at the
   // end of body, after the loader markup — the DOM it needs already exists.
@@ -76,10 +86,9 @@
       "meta.description": "Atomic Strategy — boutique brand & marketing strategy studio στο Ηράκλειο Κρήτης.",
       "a11y.skipLink": "Μετάβαση στο περιεχόμενο",
 
-      "nav.about": "Σχετικά",
-      "nav.services": "Υπηρεσίες",
-      "nav.work": "Case Studies",
-      "nav.contact": "Επικοινωνία",
+      "nav.about": "About us",
+      "nav.services": "What we do",
+      "nav.contact": "Get in touch",
       "nav.cta": "Ας μιλήσουμε",
       "nav.servicesFooterPrompt": "Δεν ξέρεις από πού να ξεκινήσεις;",
       "nav.servicesFooterCta": "Κλείσε ένα ραντεβού →",
@@ -90,13 +99,30 @@
       "about.kicker": "Σχετικά",
       "about.heading": "Λίγα λόγια για εμάς",
       "about.body": "Το Atomic Strategy είναι ένα boutique brand & marketing strategy studio. Δουλεύουμε με brands που θέλουν να ξεχωρίσουν από το πλήθος, συνδυάζοντας στρατηγική με δημιουργικό περιεχόμενο για να χτίσουν ισχυρή ψηφιακή παρουσία και να πετύχουν ουσιαστική ανάπτυξη.",
-      "about.stat1Label": "χρόνια εμπειρίας",
-      "about.stat2Label": "ολοκληρωμένα έργα",
-      "about.stat3Label": "custom λύσεις",
 
-      "services.kicker": "Υπηρεσίες",
-      "services.heading": "Πώς μπορούμε να βοηθήσουμε",
-      "services.subheading": "Social, διαφημίσεις και web — χτισμένα γύρω από το funnel που πραγματικά ακολουθούν οι πελάτες σου.",
+      "results.kicker": "Οργανικά αποτελέσματα των πελατών μας",
+      "results.l1": "Αύξηση κοινού στο Instagram",
+      "results.l2": "Αύξηση followers",
+      "results.l3": "Οργανικές προβολές ανά περιεχόμενο",
+      "results.l4": "Οργανικές προβολές σε όλους τους λογαριασμούς που διαχειριζόμαστε",
+      "results.l5": "Κοινό TikTok χτισμένο από το μηδέν",
+      "results.l6": "Ανάπτυξη TikTok σε 30 μέρες",
+
+      "services.kicker": "Οι Υπηρεσίες μας",
+      "services.heading": "Τι κάνουμε για εσένα.",
+      "services.subheading": "Social, διαφημίσεις και web — χτισμένα γύρω από το funnel που πραγματικά ακολουθούν οι πελάτες σου, όχι ένα ημερολόγιο περιεχομένου για το θεαθήναι.",
+      "services.svc1Sub": "(Meta & TikTok)",
+      "services.svc1B1": "Ανάπτυξη εξατομικευμένης στρατηγικής marketing για την επιχείρησή σου",
+      "services.svc1B2": "Δημιουργία καινοτόμων concepts για την αποτελεσματική προβολή του brand σου",
+      "services.svc1B3": "Παραγωγή περιεχομένου ανάλογα με τη συχνότητα που χρειάζεσαι (+ εύρεση μοντέλων)",
+      "services.svc1B4": "Επεξεργασία περιεχομένου ανάλογα με την πλατφόρμα",
+      "services.svc1B5": "Ανέβασμα με SEO-optimized περιγραφές",
+      "services.svc2B1": "Ανάπτυξη στρατηγικής βασισμένης στο Customer Funnel",
+      "services.svc2B2": "Δημιουργία και διαχείριση καμπανιών",
+      "services.svc2B3": "Copywriting διαφημίσεων",
+      "services.svc2B4": "Δημιουργία Retargeting Audiences (η καλύτερη τακτική)",
+      "services.svc2B5": "Παραγωγή creative για τις διαφημίσεις (αν χρειαστεί)",
+      "services.svc2B6": "Διαχείριση budget & μηνιαία αναφορά",
       "service1.title": "Διαχείριση Social Media",
       "service1.desc": "Στρατηγική, παραγωγή και διαχείριση περιεχομένου για Meta & TikTok, προσαρμοσμένα στο brand σου.",
       "service2.title": "Meta & Google Ads",
@@ -106,9 +132,6 @@
       "service4.title": "Brand Strategy",
       "service4.desc": "Θέση, αφήγηση και ταυτότητα που κάνουν το brand σου να ξεχωρίζει από το πλήθος.",
 
-      "work.kicker": "Case Studies",
-      "work.heading": "Brands που πήραμε ένα βήμα παραπέρα",
-      "work.subheading": "Οκτώ brands, μία στρατηγική τη φορά.",
 
       "contact.kicker": "Επικοινωνία",
       "contact.heading": "Ας φτιάξουμε κάτι μαζί",
@@ -132,10 +155,9 @@
       "meta.description": "Atomic Strategy — boutique brand & marketing strategy studio in Heraklion, Crete.",
       "a11y.skipLink": "Skip to content",
 
-      "nav.about": "About",
-      "nav.services": "Services",
-      "nav.work": "Case Studies",
-      "nav.contact": "Contact",
+      "nav.about": "About us",
+      "nav.services": "What we do",
+      "nav.contact": "Get in touch",
       "nav.cta": "Let's talk",
       "nav.servicesFooterPrompt": "Not sure where to start?",
       "nav.servicesFooterCta": "Book a strategy call →",
@@ -146,13 +168,30 @@
       "about.kicker": "About",
       "about.heading": "A little about us",
       "about.body": "Atomic Strategy is a boutique brand & marketing strategy studio. We work with brands that want to stand out from the crowd, pairing strategy with creative content to build a strong digital presence and drive meaningful growth.",
-      "about.stat1Label": "years of experience",
-      "about.stat2Label": "projects shipped",
-      "about.stat3Label": "custom-built solutions",
 
-      "services.kicker": "Services",
-      "services.heading": "How we can help",
-      "services.subheading": "Social, ads, and web — built around the funnel your customers actually follow.",
+      "results.kicker": "Organic results of our clients",
+      "results.l1": "Instagram audience growth",
+      "results.l2": "Follower growth",
+      "results.l3": "Organic views per piece of content",
+      "results.l4": "Organic views across managed accounts",
+      "results.l5": "TikTok audience built from scratch",
+      "results.l6": "TikTok growth in 30 days",
+
+      "services.kicker": "Our Services",
+      "services.heading": "What we do for you.",
+      "services.subheading": "Social, ads, and web — built around the funnel your customers actually follow, not a content calendar for its own sake.",
+      "services.svc1Sub": "(Meta & TikTok)",
+      "services.svc1B1": "Developing a tailored marketing strategy for your business",
+      "services.svc1B2": "Creating innovative concepts to effectively promote your brand",
+      "services.svc1B3": "Content production based on your required frequency (+ model sourcing)",
+      "services.svc1B4": "Content editing according to the social media platform",
+      "services.svc1B5": "Uploading with SEO-optimized descriptions",
+      "services.svc2B1": "Developing a strategy based on the Customer Funnel",
+      "services.svc2B2": "Building and managing campaigns",
+      "services.svc2B3": "Ad copywriting",
+      "services.svc2B4": "Creation of Retargeting Audiences (best tactic)",
+      "services.svc2B5": "Creative production for ad creatives (if needed)",
+      "services.svc2B6": "Budget management & monthly reporting",
       "service1.title": "Social Media Management",
       "service1.desc": "Strategy, production, and content management for Meta & TikTok, tailored to your brand.",
       "service2.title": "Meta & Google Ads",
@@ -162,9 +201,6 @@
       "service4.title": "Brand Strategy",
       "service4.desc": "Positioning, story, and identity that make your brand stand out from the crowd.",
 
-      "work.kicker": "Case Studies",
-      "work.heading": "Brands we've moved forward",
-      "work.subheading": "Eight brands, one strategy at a time.",
 
       "contact.kicker": "Contact",
       "contact.heading": "Let's build something together",
@@ -307,6 +343,174 @@
   function initNavDropdowns() {
     initNavDropdown("servicesDropdownTrigger", "servicesDropdownPanel");
     initNavDropdown("servicesDropdownTriggerFloating", "servicesDropdownPanelFloating");
+  }
+
+  // Shared by the plain click-to-toggle accordion (initServicesAccordion)
+  // and the scroll-driven pinned version (initServicesPinnedTabs) — both
+  // just need to flip a row's open state with the same height animation.
+  function setAccordionRowOpen(row, open) {
+    var btn = row.querySelector(".acc-summary");
+    var body = row.querySelector(".acc-body");
+    if (!btn || !body || open === row.classList.contains("is-open")) {
+      return;
+    }
+
+    // Drop any listener left over from a previous, possibly interrupted,
+    // open — otherwise its transitionend would fire on this transition and
+    // flip a closing row back to height: auto (stuck visually open).
+    if (body._accEnd) {
+      body.removeEventListener("transitionend", body._accEnd);
+      body._accEnd = null;
+    }
+
+    if (open) {
+      body.style.height = body.scrollHeight + "px";
+      body._accEnd = function (e) {
+        if (e.target !== body || e.propertyName !== "height") {
+          return;
+        }
+        body.style.height = "auto";
+        body.removeEventListener("transitionend", body._accEnd);
+        body._accEnd = null;
+      };
+      body.addEventListener("transitionend", body._accEnd);
+    } else {
+      body.style.height = body.scrollHeight + "px";
+      void body.offsetHeight;
+      body.style.height = "0px";
+    }
+
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    row.classList.toggle("is-open", open);
+  }
+
+  function initServicesAccordion() {
+    document.querySelectorAll(".acc-row").forEach(function (row) {
+      var btn = row.querySelector(".acc-summary");
+      var body = row.querySelector(".acc-body");
+      if (!btn || !body) {
+        return;
+      }
+
+      if (row.classList.contains("is-open")) {
+        body.style.height = "auto";
+      }
+
+      btn.addEventListener("click", function () {
+        // Inside the pinned services section, scroll position is what
+        // drives which tab is open (see initServicesPinnedTabs) — a plain
+        // toggle here would just get overwritten on the next scroll tick,
+        // so that function attaches its own click handler (scrolls to the
+        // tab's segment) and this one steps aside.
+        if (document.documentElement.classList.contains("pin-mode") && row.closest("#svcPinWrap")) {
+          return;
+        }
+        setAccordionRowOpen(row, btn.getAttribute("aria-expanded") !== "true");
+      });
+    });
+  }
+
+  function initServicesPinnedTabs() {
+    if (!document.documentElement.classList.contains("pin-mode")) {
+      return;
+    }
+
+    var pinWrap = document.getElementById("svcPinWrap");
+    var rows = pinWrap ? Array.prototype.slice.call(pinWrap.querySelectorAll(".acc-row")) : [];
+    if (!pinWrap || !rows.length) {
+      return;
+    }
+
+    // How much extra scroll distance (as a fraction of one viewport) each
+    // tab gets before the progress line finishes and the next one opens.
+    var SEGMENT_VH = 160;
+    var lastActiveIndex = -1;
+    var openTimer = null;
+    // Keep in sync with the .acc-body height transition in styles.css.
+    var ACC_DURATION_MS = 550;
+
+    function clamp01(n) {
+      return Math.min(1, Math.max(0, n));
+    }
+
+    function recomputeHeight() {
+      pinWrap.style.height = 100 + rows.length * SEGMENT_VH + "vh";
+    }
+    recomputeHeight();
+
+    function update() {
+      var scrolled = -pinWrap.getBoundingClientRect().top;
+      var totalScrollable = Math.max(1, pinWrap.offsetHeight - window.innerHeight);
+      var scaled = clamp01(scrolled / totalScrollable) * rows.length;
+      var activeIndex = Math.min(rows.length - 1, Math.floor(scaled));
+      var withinProgress = clamp01(scaled - activeIndex);
+
+      rows.forEach(function (row, i) {
+        var fill = row.querySelector(".acc-progress-fill");
+        if (!fill) {
+          return;
+        }
+        var pct = i < activeIndex ? 100 : i === activeIndex ? withinProgress * 100 : 0;
+        fill.style.width = pct + "%";
+      });
+
+      if (activeIndex !== lastActiveIndex) {
+        var isFirst = lastActiveIndex === -1;
+        lastActiveIndex = activeIndex;
+        clearTimeout(openTimer);
+
+        // One at a time: the previous tab closes first, and only once it has
+        // finished does the next one open.
+        rows.forEach(function (row, i) {
+          if (i !== activeIndex) {
+            setAccordionRowOpen(row, false);
+          }
+        });
+
+        if (isFirst) {
+          setAccordionRowOpen(rows[activeIndex], true);
+        } else {
+          openTimer = setTimeout(function () {
+            setAccordionRowOpen(rows[lastActiveIndex], true);
+          }, ACC_DURATION_MS);
+        }
+      }
+    }
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) {
+        return;
+      }
+      ticking = true;
+      requestAnimationFrame(function () {
+        update();
+        ticking = false;
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", function () {
+      recomputeHeight();
+      onScroll();
+    });
+    update();
+
+    // Clicking a tab while pinned scrolls the window to that tab's
+    // segment instead of toggling it directly — see the early-return in
+    // initServicesAccordion's click handler above.
+    rows.forEach(function (row, i) {
+      var btn = row.querySelector(".acc-summary");
+      if (!btn) {
+        return;
+      }
+      btn.addEventListener("click", function () {
+        var totalScrollable = Math.max(1, pinWrap.offsetHeight - window.innerHeight);
+        var segment = totalScrollable / rows.length;
+        var wrapTop = pinWrap.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top: wrapTop + segment * (i + 0.5), behavior: "smooth" });
+      });
+    });
   }
 
   function initScrollReveal() {
@@ -1016,6 +1220,8 @@
     initLangSwitch();
     initFooterYear();
     initNavDropdowns();
+    initServicesAccordion();
+    initServicesPinnedTabs();
     initContactForm();
     initScrollReveal();
     initPinnedScroll();
