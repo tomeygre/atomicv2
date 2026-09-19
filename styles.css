@@ -609,7 +609,20 @@ body.is-loading .hero .hero-scroll {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+  /* While closed it collapses to nothing (after the fade-out), otherwise its
+     invisible box still stretches the hero panel's scrollable area — on a
+     phone that let touches scroll inside the panel instead of the page. */
+  max-height: 2000px;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s,
+    max-height 0s linear 0.2s, padding 0s linear 0.2s, border-width 0s linear 0.2s;
+}
+
+.nav-dropdown:not(.is-open) .nav-dropdown-panel {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  overflow: hidden;
 }
 
 .nav-dropdown.is-open .nav-dropdown-panel {
@@ -1057,6 +1070,10 @@ html.pin-mode .pin-stage {
   position: sticky;
   top: 0;
   height: 100vh;
+  /* svh = the height actually visible with mobile browser toolbars showing,
+     so the hero's bottom (slogan + Explore) never hides behind Safari's
+     bottom bar; vh above is the fallback for older browsers. */
+  height: 100svh;
   overflow: hidden;
 }
 
@@ -1695,6 +1712,7 @@ html.pin-mode .svc-pin-stage {
   position: sticky;
   top: 0;
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
 }
@@ -1888,8 +1906,24 @@ html.pin-mode .svc-pin-stage > .wrap {
   .hero {
     flex-direction: column;
     align-items: center;
-    /* Slogan + Explore hug the bottom edge of the screen. */
-    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    /* Slogan + Explore hug the bottom edge of the screen. Spacing scales
+       with the device's visible height (svh) so short phones don't push
+       Explore off-screen and tall ones don't leave a big gap. */
+    padding-top: clamp(104px, 15svh, 150px);
+    padding-bottom: calc(clamp(14px, 3svh, 28px) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Slogan scales with both the screen's width and its visible height, so
+     it fits any phone (small iPhone SE up to tall Android) without
+     spilling out or wrapping into the bottom. */
+  .hero-title {
+    font-size: clamp(1.6rem, min(9vw, 5.4svh), 3rem);
+    gap: clamp(10px, 2.6svh, 28px);
+  }
+
+  .hero-title-line-1,
+  .hero-title-line-2 {
+    max-width: 92%;
   }
 
   /* Column layout: push the slogan to the bottom edge, with Explore
@@ -1902,7 +1936,7 @@ html.pin-mode .svc-pin-stage > .wrap {
   .hero-scroll {
     position: static;
     transform: none;
-    margin-top: 24px;
+    margin-top: clamp(12px, 3svh, 24px);
   }
 }
 
@@ -1917,7 +1951,7 @@ html.pin-mode .svc-pin-stage > .wrap {
   }
 
   .hero .brand-badge-text {
-    font-size: 1.15rem;
+    font-size: clamp(0.95rem, 4.6vw, 1.3rem);
   }
 
   .hero-top-right {
